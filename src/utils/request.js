@@ -2,10 +2,10 @@ import axios from 'axios'
 import store from '@/store'
 import { Message } from 'element-ui'
 const service = axios.create({
-  baseURL: '/api', // 基础地址
+  baseURL: process.env.VUE_APP_BASE_API, // 基础地址
   timeout: 10000
 }) // 创建了一个新的axios实例
-
+// 请求拦截器
 // 成功1 失败2
 service.interceptors.request.use((config) => {
   // 注入token
@@ -26,6 +26,7 @@ service.interceptors.response.use((response) => {
   if (success) {
     return data
   } else {
+    Message.error(message) // 提示消息
     return Promise.reject(new Error(message))
   }
 }, (error) => {
