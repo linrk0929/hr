@@ -20,12 +20,14 @@
           <el-form-item>
             <el-button type="primary" style="width: 350px;" @click="login">登录</el-button>
           </el-form-item>
+
         </el-form>
       </el-card>
     </div>
   </div>
 </template>
 <script>
+
 export default {
   name: 'Login',
   data() {
@@ -74,10 +76,11 @@ export default {
     login() {
       this.$refs.form.validate((isOK) => {
         if (isOK) {
-          alert('校验通过')
+          this.$store.dispatch('user/login', this.loginForm)
         }
       })
     }
+
   }
 }
 </script>
