@@ -7,23 +7,30 @@
     <div class="right-menu">
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
+          <!-- 头像 -->
+          <img v-if="avatar" :src="avatar" class="user-avatar">
+          <span v-else class="username">{{ name?.charAt(0) }}</span>
+          <!-- 用户名称 -->
+          <span class="name">{{ name }}</span>
+          <!-- 图标 -->
+          <i class="el-icon-setting" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
             <el-dropdown-item>
-              Home
+              首页
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
+          <a target="_blank" href="https://github.com/linrk0929/hr/">
+            <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
           <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
+            <el-dropdown-item>修改密码</el-dropdown-item>
           </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
+          <!-- native事件修饰符 -->
+          <!-- 注册组件的根元素的原生事件 -->
+          <el-dropdown-item @click.native="logout">
+            <span style="display:block;">登出</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -44,7 +51,8 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'name'
     ])
   },
   methods: {
@@ -52,8 +60,9 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
+      // 调用退出的action
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push(`/login`)
     }
   }
 }
@@ -117,6 +126,32 @@ export default {
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
+        display: flex;
+        align-items: center;
+        .name {
+          margin-right: 10px;
+          font-size: 16px;
+        }
+        .username{
+          width: 30px;
+          height: 30px;
+          text-align: center;
+          line-height: 30px;
+          border-radius: 50%;
+          background: #04c9be;
+          color: #ffff;
+          margin-right: 4px;
+        }
+        .el-icon-setting {
+          font-size: 20px;
+        }
+        .user-avatar {
+          cursor: pointer;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+
+        }
 
         .user-avatar {
           cursor: pointer;
