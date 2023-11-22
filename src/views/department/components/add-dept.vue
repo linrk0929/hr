@@ -25,7 +25,7 @@
         <!-- 按钮 -->
         <el-row type="flex" justify="center">
           <el-col :span="12">
-            <el-button size="mini" type="primary">确定</el-button>
+            <el-button size="mini" type="primary" @click="btnOK">确定</el-button>
             <el-button size="mini">取消</el-button>
           </el-col>
         </el-row>
@@ -34,8 +34,8 @@
   </el-dialog>
 </template>
 <script>
-import { getDepartment } from '@/api/department'
-import { getManagerList } from '@/api/department'
+import { addDepartment, getDepartment } from '@/api/department'
+import { getManagerList, getDepartmentDetail } from '@/api/department'
 export default {
   name: 'AddDept',
   props: {
@@ -65,7 +65,13 @@ export default {
             // 自定义校验模式
             validator: async(rule, value, callback) => {
               // value就是输入的编码
-              const result = await getDepartment()
+              let result = await getDepartment()
+              // 判断是否是编辑模式
+              if (this.formData.id) {
+                // 编辑场景
+                result = result.filter(item => item.id !== this.formData.id)
+              }
+              // result数组中是否存在value值
               if (result.some(item => item.code === value)) {
                 callback(new Error('部门中已经有编码了'))
               } else {
@@ -80,7 +86,19 @@ export default {
         managerId: [{ required: true, message: '部门负责人不能为空', trigger: 'blur' }], // 部门负责人id
         name: [{ required: true, message: '部门名称不能为空', trigger: 'blur' },
           {
-            min: 2, max: 10, message: '部门名称的长度为2-10个字符', trigger: 'blur'
+            min: 2, max: 10, message: '部门名称的长度为2-10个字符', trigger: 'blur',
+            validator: async(rule, value, callback) => {
+              let result = await getDepartment()
+              if (this.formData.id) {
+                result = result.filter(item => item.id !== this.formData.id)
+              }
+              // result数组中是否存在 value值
+              if (result.some(item => item.name === value)) {
+                callback(new Error('部门中已经有该名称了'))
+              } else {
+                callback()
+              }
+            }
           }] // 部门名称
         // pid: '' // 父级部门的id 不需要做校验
       }
@@ -91,10 +109,27 @@ export default {
   },
   methods: {
     close() {
+      this.$refs.addDept.resetFields() // 重置表单
       this.$emit('update:showDialog', false)
     },
     async getManagerList() {
       this.managerList = await getManagerList()
+    },
+    // 点击确定时候调用
+    btnOK() {
+      this.$refs.addDept.validate(async isOK => {
+        if (isOK) {
+          await addDepartment({ ...this.formData, pid: this.currentNodeId })
+          // 通知父组件更新
+          this.$emit('updateDepartment')
+          // 提示消息
+          this.$message.success(`新增部门成功`)
+          this.close()
+        }
+      })
+    },
+    async getDepartmentDetail() {
+      this.formData = await getDepartmentDetail(this.currentNodeId)
     }
   }
 }

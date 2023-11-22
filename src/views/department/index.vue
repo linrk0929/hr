@@ -24,7 +24,7 @@
         </template>
       </el-tree>
     </div>
-    <addDept :show-dialog.sync="showDialog" :current-node-id="currentNodeId" />
+    <addDept ref="addDept" :show-dialog.sync="showDialog" :current-node-id="currentNodeId" @updateDepartment="getDepartment" />
   </div>
 </template>
 <script>
@@ -67,6 +67,15 @@ export default {
       if (type === 'add') {
         this.showDialog = true
         this.currentNodeId = id
+      } else if (type === 'edit') {
+        // 编辑部门场景
+        this.showDialog = true
+        this.currentNodeId = id // 记录id 要用它获取数据
+        // 要在子组件获取数据
+        // 父组件调用子组件的方法来获取数据
+        this.$nextTick(() => {
+          this.$refs.addDept.getDepartmentDetail()
+        }) // this.$refs.addDept等同于子组件的this
       }
     }
   }
