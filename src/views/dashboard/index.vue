@@ -1,10 +1,6 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
-    <!-- 使用svg-icon组件 -->
-    <svg-icon icon-class="dashboard" />
-    <svg-icon icon-class="eye" />
-    <svg-icon icon-class="password" />
   </div>
 </template>
 
