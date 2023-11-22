@@ -28,6 +28,7 @@
   </div>
 </template>
 <script>
+import { getDepartment } from '@/api/department'
 export default {
   name: 'Department',
   data() {
@@ -45,6 +46,15 @@ export default {
         children: 'children',
         label: 'name'
       }
+    }
+  },
+  created() {
+    this.getDepartment()
+  },
+  methods: {
+    async getDepartment() {
+      const result = await getDepartment()
+      this.depts = result
     }
   }
 }
