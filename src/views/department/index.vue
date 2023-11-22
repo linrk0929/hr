@@ -10,7 +10,7 @@
             <el-col>{{ data.name }}</el-col>
             <el-col :span="4">
               <span class="tree-manager">{{ data.managerName }}</span>
-              <el-dropdown @command="operateDept">
+              <el-dropdown @command="operateDept($event,data.id)">
                 <span class="el-dropdown-link">操作<i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -24,7 +24,7 @@
         </template>
       </el-tree>
     </div>
-    <addDept :show-dialog.sync="showDialog" />
+    <addDept :show-dialog.sync="showDialog" :current-node-id="currentNodeId" />
   </div>
 </template>
 <script>
@@ -36,6 +36,7 @@ export default {
   components: { AddDept },
   data() {
     return {
+      currentNodeId: null,
       showDialog: false,
       depts: [{
         name: '传智教育',
@@ -62,9 +63,10 @@ export default {
       this.depts = transListToTreeData(result, 0)
     },
     // 操作部门方法
-    operateDept(type) {
+    operateDept(type, id) {
       if (type === 'add') {
         this.showDialog = true
+        this.currentNodeId = id
       }
     }
   }
