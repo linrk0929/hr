@@ -23,6 +23,7 @@ service.interceptors.request.use((config) => {
 // 响应拦截器
 service.interceptors.response.use((response) => {
   //  axios 默认包裹了data
+  if (response.data instanceof Blob) return response.data
   const { data, message, success } = response.data
   if (success) {
     return data
@@ -30,7 +31,8 @@ service.interceptors.response.use((response) => {
     Message.error(message) // 提示消息
     return Promise.reject(new Error(message))
   }
-}, async(error) => {
+},
+async(error) => {
   if (error.response.status === 401) {
     Message({ type: 'warning', message: 'token超时了' })
     // 说明token超时了
