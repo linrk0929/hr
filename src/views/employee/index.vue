@@ -71,7 +71,7 @@
         </el-row>
       </div>
     </div>
-    <import-excel :show-excel-dialog.sync="showExcelDialog" />
+    <import-excel :show-excel-dialog.sync="showExcelDialog" @uploadSuccess="getEmployeeList" />
   </div>
 </template>
 
@@ -80,7 +80,7 @@ import { getDepartment } from '@/api/department'
 import { getEmployeeList } from '@/api/employee'
 import { transListToTreeData } from '@/utils'
 import FileSaver from 'file-saver'
-import { exportEmployee } from '@/api/employee'
+import { exportEmployee, getExportTemplate } from '@/api/employee'
 import ImportExcel from './components/import-excel.vue'
 export default {
   name: 'Employee',
@@ -156,6 +156,10 @@ export default {
       // console.log(result) // 使用一个npm包 直接将blob文件下载到本地 file-saver
       // FileSaver.saveAs(blob对象,文件名称)
       FileSaver.saveAs(result, '员工信息表.xlsx') // 下载文件
+    },
+    async getTemplate() {
+      const data = await getExportTemplate()
+      FileSaver.saveAs(data, '员工导入模板.xlsx')
     }
   }
 }
