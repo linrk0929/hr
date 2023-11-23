@@ -14,3 +14,21 @@ export function addRole(data) {
     data
   })
 }
+
+// 更新角色
+export function updateRole(data) {
+  return request({
+    url: `/sys/role/${data.id}`,
+    method: 'put',
+    data
+  })
+}
+
+// 删除角色
+export function delRole(id) {
+  return request({
+    url: `/sys/role/${id}`,
+    method: 'delete'
+  })
+}
+
