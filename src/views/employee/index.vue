@@ -25,7 +25,7 @@
       </div>
       <div class="right">
         <el-row class="opeate-tools" type="flex" justify="end">
-          <el-button size="mini" type="primary">添加员工</el-button>
+          <el-button size="mini" type="primary" @click="$router.push('/employee/detail')">添加员工</el-button>
           <el-button size="mini" @click="showExcelDialog = true">excel导入</el-button>
           <el-button size="mini" @click="exportEmployee">excel导出</el-button>
         </el-row>
@@ -50,10 +50,15 @@
           <el-table-column prop="departmentName" label="部门" />
           <el-table-column prop="timeOfEntry" label="入职时间" sortable />
           <el-table-column label="操作" width="280px">
-            <template>
-              <el-button size="mini" type="text">查看</el-button>
+            <template v-slot="{ row }">
+              <el-button size="mini" type="text" @click="$router.push(`/employee/detail/${row.id}`)">查看</el-button>
               <el-button size="mini" type="text">角色</el-button>
-              <el-button size="mini" type="text">删除</el-button>
+              <el-popconfirm
+                title="确认删除该行数据吗？"
+                @onConfirm="confirmDel(row.id)"
+              >
+                <el-button slot="reference" style="margin-left:10px" size="mini" type="text">删除</el-button>
+              </el-popconfirm>
 
             </template>
           </el-table-column>
@@ -71,16 +76,16 @@
         </el-row>
       </div>
     </div>
+    <!-- 放置导入组件 -->
     <import-excel :show-excel-dialog.sync="showExcelDialog" @uploadSuccess="getEmployeeList" />
   </div>
 </template>
 
 <script>
 import { getDepartment } from '@/api/department'
-import { getEmployeeList } from '@/api/employee'
+import { getEmployeeList, exportEmployee, delEmployee } from '@/api/employee'
 import { transListToTreeData } from '@/utils'
 import FileSaver from 'file-saver'
-import { exportEmployee, getExportTemplate } from '@/api/employee'
 import ImportExcel from './components/import-excel.vue'
 export default {
   name: 'Employee',
@@ -89,7 +94,6 @@ export default {
   },
   data() {
     return {
-      showExcelDialog: false,
       depts: [], // 组织数据
       defaultProps: {
         label: 'name',
@@ -103,7 +107,8 @@ export default {
         keyword: ''
       },
       total: 0, // 记录员工的总数
-      list: [] // 存储员工列表数据
+      list: [], // 存储员工列表数据
+      showExcelDialog: false // 控制excel的弹层显示和隐藏
     }
   },
   created() {
@@ -151,15 +156,22 @@ export default {
         this.getEmployeeList()
       }, 300)
     },
+    /** *
+     * 导出员工的excel
+     *
+     * **/
     async  exportEmployee() {
       const result = await exportEmployee() // 导出所有的员工接口
       // console.log(result) // 使用一个npm包 直接将blob文件下载到本地 file-saver
       // FileSaver.saveAs(blob对象,文件名称)
       FileSaver.saveAs(result, '员工信息表.xlsx') // 下载文件
     },
-    async getTemplate() {
-      const data = await getExportTemplate()
-      FileSaver.saveAs(data, '员工导入模板.xlsx')
+    // 删除员工方法
+    async confirmDel(id) {
+      await delEmployee(id)
+      if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
+      this.getEmployeeList()
+      this.$message.success('删除员工成功')
     }
   }
 }
