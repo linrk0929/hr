@@ -30,7 +30,8 @@
   </el-dialog>
 </template>
 <script>
-import { uploadExcel } from '@/api/employee'
+import { getExportTemplate, uploadExcel } from '@/api/employee'
+import FileSaver from 'file-saver'
 export default {
   props: {
     showExcelDialog: {
@@ -39,8 +40,13 @@ export default {
     }
   },
   methods: {
+    async getTemplate() {
+      const data = await getExportTemplate()
+      FileSaver.saveAs(data, '员工导入模版.xlsx')
+    },
+    // 弹出文件选择器-只有一种方式 通过input file
     handleUpload() {
-      this.$refs['excel-upload-input'].click() // this.$refs.属性名 和this.$refs[属性名] 等价
+      this.$refs['excel-upload-input'].click() // this.$refs.属性名 和 this.$refs[属性名] 等价
     },
     async uploadChange(event) {
       console.log(event.target.files)
@@ -71,39 +77,40 @@ export default {
 }
 </script>
 
-  <style scoped lang="scss">
-      .upload-excel {
+<style scoped lang="scss">
+    .upload-excel {
+      display: flex;
+      justify-content: center;
+      margin: 20px;
+      width: 360px;
+      height: 180px;
+      align-items: center;
+      color: #697086;
+      .excel-upload-input {
+        display: none;
+        z-index: -9999;
+      }
+      .btn-upload,
+      .drop {
+        border: 1px dashed #dcdfe6;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        line-height: 160px;
+        border-radius: 8px;
         display: flex;
+        flex-direction: column;
         justify-content: center;
-        margin: 20px;
-        width: 360px;
-        height: 180px;
-        align-items: center;
-        color: #697086;
-        .excel-upload-input {
-          display: none;
-          z-index: -9999;
-        }
-        .btn-upload,
-        .drop {
-          border: 1px dashed #dcdfe6;
-          width: 100%;
-          height: 100%;
-          text-align: center;
-          line-height: 160px;
-          border-radius: 8px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-        .drop {
-          line-height: 40px;
-          color: #bbb;
-          i {
-            font-size: 60px;
-            display: block;
-            color: #c0c4cc;
-          }
+      }
+      .drop {
+        line-height: 40px;
+        color: #bbb;
+        i {
+          font-size: 60px;
+          display: block;
+          color: #c0c4cc;
         }
       }
-  </style>
+    }
+</style>
+

@@ -63,6 +63,11 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
+
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+export const asyncRoutes = [
   departmentRouter,
   roleRouter,
   employeeRouter,
@@ -70,11 +75,7 @@ export const constantRoutes = [
   attendanceRouter,
   permissionRouter,
   salaryRouter,
-  socialRouter,
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
-]
-
+  socialRouter]
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
