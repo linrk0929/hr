@@ -23,10 +23,10 @@ import '@/permission' // permission control
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
 
 // set ElementUI lang to EN
 Vue.use(ElementUI)
@@ -35,6 +35,15 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
+// 注册自定义指令 控制功能权限
+Vue.directive('permission', {
+  inserted(el, binding) {
+    const points = store.state.user.userInfo?.roles?.points || []
+    if (!points.includes(binding.value)) {
+      el.remove()
+    }
+  }
+})
 new Vue({
   el: '#app',
   router,
